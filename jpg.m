@@ -25,3 +25,31 @@ function [ imagenComprimida ] = jpg( imagenOriginal , factorCalidad )
                          ];
      
     matrizCalidad = matrizCuantizacion * factorCalidad;
+
+	    for i = 1 : 8 : filas
+        
+        for j = 1 : 8 : columnas
+            
+            submuestreo = imagenOriginal( i : i + 7 , j : j + 7 );
+            
+            bloque = double( submuestreo ) - 128;
+            
+            bloqueTransformado = dct2( bloque );
+            
+            bloqueCuantificado = round( bloqueTransformado ./ ...
+                                  matrizCalidad );
+                              
+            bloqueDevuelto = bloqueCuantificado .* matrizCalidad;
+            
+            bloqueInverso = round( idct2( bloqueDevuelto ) );
+            
+            bloqueDecodificado = bloqueInverso + 128;
+            
+            bloqueComprimido( i : i + 7 , j : j + 7 ) = bloqueDecodificado;
+            
+        end
+    end
+    
+    imagenComprimida = uint8( bloqueComprimido );
+    
+end
